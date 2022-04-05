@@ -1,3 +1,5 @@
+package Test;
+
 import main.java.DocumentSorter;
 import main.java.HTMLParser;
 import org.junit.jupiter.api.Test;

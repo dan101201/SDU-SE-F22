@@ -8,28 +8,32 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class Management{
+    static Database dat;
 
-    public void Create(String html) {
+    static {
         try {
-            var dat = Database.getDatabase();
-            dat.Execute("INSERT INTO pages (timestamp, id) VALUES (NOW(), " + html + ");");
+            dat = Database.getDatabase();
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    public String GetPageString(int id) {
+    public static void Create(String html) throws SQLException{
+        dat.executeVoidReturn("INSERT INTO pages (timestamp, html) VALUES (NOW(), '" + html + "');");
+    }
+
+    public static String getPageString(int id) throws SQLException {
         var result = GetResultSetFromId(id);
         try {
             result.next();
-            return result.getString(3);
+            return result.getString(2);
         } catch (SQLException e) {
             e.printStackTrace();
             return null;
         }
     }
 
-    public Document GetPageDocument(int id) {
+    public static Document GetPageDocument(int id) throws SQLException {
         var result = GetResultSetFromId(id);
         try {
             result.next();
@@ -40,30 +44,22 @@ public class Management{
         }
     }
 
-    private ResultSet GetResultSetFromId(int id) {
-        try {
-            var dat = Database.getDatabase();
-            return dat.Execute(
-                    "SELECT * FROM pages WHERE id = " + id);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return null; //wtf do we do if we cant connect to database?
+    private static ResultSet GetResultSetFromId(int id) throws SQLException{
+        return dat.Execute("SELECT * FROM pages WHERE id = " + id);
     }
 
-    public void Update(int id, String html) {
+    public static void Update(int id, String html) {
         try {
             var dat = Database.getDatabase();
-            dat.Execute("UPDATE pages SET html = '" + html + "', timestamp = NOW() WHERE id = " + id);
+            dat.executeVoidReturn("UPDATE pages SET html = '" + html + "', timestamp = NOW() WHERE id = " + id);
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    public void Delete(int id) {
+    public static void Delete(int id) {
         try {
-            var dat = Database.getDatabase();
-            dat.Execute("DELETE FROM pages WHERE id = " + id);
+            dat.executeVoidReturn("DELETE FROM pages WHERE id = " + id);
         } catch (SQLException e) {
             e.printStackTrace();
         }
